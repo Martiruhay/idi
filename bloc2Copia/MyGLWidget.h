@@ -6,6 +6,7 @@
 #include <QKeyEvent>
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include "model.h"
 
 class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core 
 {
@@ -16,7 +17,7 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     ~MyGLWidget ();
 
   protected:
-    // initializeGL - Aqui incluim les inicialitzacions del contexte grafic.
+    // initializeGL - Aqui incluim les inicialitzacions del context grafic.
     virtual void initializeGL ( );
     // paintGL - Mètode cridat cada cop que cal refrescar la finestra.
     // Tot el que es dibuixa es dibuixa aqui.
@@ -30,17 +31,23 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     void createBuffers ();
     void carregaShaders ();
     void modelTransform ();
+    void projectTransform();
+    void viewTransform();
+    
+    void initCamera();
 
     // attribute locations
     GLuint vertexLoc, colorLoc;
     // uniform locations
-    GLuint transLoc;
+    GLuint transLoc, projLoc, viewLoc;
     // VAO i VBO names
-    GLuint VAO_Casa, VBO_CasaPos, VBO_CasaCol;
+    GLuint VAO_Homer, VBO_vertexs, VBO_color;
     // Program
     QOpenGLShaderProgram *program;
     // Internal vars
     float scale;
-    glm::vec3 pos;
+    glm::vec3 pos, OBS, VRP, UP;
+    float FOV, ra, znear, zfar;
+    Model model;
 };
 

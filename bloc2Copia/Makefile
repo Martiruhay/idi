@@ -50,11 +50,13 @@ OBJECTS_DIR   = ./
 
 SOURCES       = main.cpp \
 		MyForm.cpp \
-		MyGLWidget.cpp moc_MyForm.cpp \
+		MyGLWidget.cpp \
+		model.cpp moc_MyForm.cpp \
 		moc_MyGLWidget.cpp
 OBJECTS       = main.o \
 		MyForm.o \
 		MyGLWidget.o \
+		model.o \
 		moc_MyForm.o \
 		moc_MyGLWidget.o
 DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
@@ -161,9 +163,11 @@ DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib64/qt5/mkspecs/features/yacc.prf \
 		/usr/lib64/qt5/mkspecs/features/lex.prf \
 		Bloc2_Exemple.pro MyForm.h \
-		MyGLWidget.h main.cpp \
+		MyGLWidget.h \
+		model.h main.cpp \
 		MyForm.cpp \
-		MyGLWidget.cpp
+		MyGLWidget.cpp \
+		model.cpp
 QMAKE_TARGET  = Bloc2_Exemple
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = Bloc2_Exemple
@@ -425,8 +429,8 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents MyForm.h MyGLWidget.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp MyForm.cpp MyGLWidget.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents MyForm.h MyGLWidget.h model.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp MyForm.cpp MyGLWidget.cpp model.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents MyForm.ui $(DISTDIR)/
 
 
@@ -454,10 +458,13 @@ compiler_moc_header_make_all: moc_MyForm.cpp moc_MyGLWidget.cpp
 compiler_moc_header_clean:
 	-$(DEL_FILE) moc_MyForm.cpp moc_MyGLWidget.cpp
 moc_MyForm.cpp: ui_MyForm.h \
+		MyGLWidget.h \
+		model.h \
 		MyForm.h
 	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home2/users/alumnes/1193809/idi/bloc2Copia -I/usr/include/glm -I/usr/include/qt5 -I/usr/include/qt5/QtOpenGL -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/4.8 -I/usr/include/c++/4.8/x86_64-suse-linux -I/usr/include/c++/4.8/backward -I/usr/lib64/gcc/x86_64-suse-linux/4.8/include -I/usr/local/include -I/usr/lib64/gcc/x86_64-suse-linux/4.8/include-fixed -I/usr/x86_64-suse-linux/include -I/usr/include MyForm.h -o moc_MyForm.cpp
 
-moc_MyGLWidget.cpp: MyGLWidget.h
+moc_MyGLWidget.cpp: model.h \
+		MyGLWidget.h
 	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home2/users/alumnes/1193809/idi/bloc2Copia -I/usr/include/glm -I/usr/include/qt5 -I/usr/include/qt5/QtOpenGL -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/4.8 -I/usr/include/c++/4.8/x86_64-suse-linux -I/usr/include/c++/4.8/backward -I/usr/lib64/gcc/x86_64-suse-linux/4.8/include -I/usr/local/include -I/usr/lib64/gcc/x86_64-suse-linux/4.8/include-fixed -I/usr/x86_64-suse-linux/include -I/usr/include MyGLWidget.h -o moc_MyGLWidget.cpp
 
 compiler_moc_source_make_all:
@@ -466,7 +473,8 @@ compiler_uic_make_all: ui_MyForm.h
 compiler_uic_clean:
 	-$(DEL_FILE) ui_MyForm.h
 ui_MyForm.h: MyForm.ui \
-		MyGLWidget.h
+		MyGLWidget.h \
+		model.h
 	/usr/lib64/qt5/bin/uic MyForm.ui -o ui_MyForm.h
 
 compiler_yacc_decl_make_all:
@@ -480,15 +488,23 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 ####### Compile
 
 main.o: main.cpp MyForm.h \
-		ui_MyForm.h
+		ui_MyForm.h \
+		MyGLWidget.h \
+		model.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
 MyForm.o: MyForm.cpp MyForm.h \
-		ui_MyForm.h
+		ui_MyForm.h \
+		MyGLWidget.h \
+		model.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o MyForm.o MyForm.cpp
 
-MyGLWidget.o: MyGLWidget.cpp MyGLWidget.h
+MyGLWidget.o: MyGLWidget.cpp MyGLWidget.h \
+		model.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o MyGLWidget.o MyGLWidget.cpp
+
+model.o: model.cpp model.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o model.o model.cpp
 
 moc_MyForm.o: moc_MyForm.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_MyForm.o moc_MyForm.cpp

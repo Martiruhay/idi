@@ -1,6 +1,7 @@
 #include "MyGLWidget.h"
 
 #include <iostream>
+using namespace std;
 
 MyGLWidget::MyGLWidget (QWidget* parent) : QOpenGLWidget(parent)
 {
@@ -20,23 +21,37 @@ void MyGLWidget::initializeGL ()
   initializeOpenGLFunctions();  
 
   glClearColor(0.5, 0.7, 1.0, 1.0); // defineix color de fons (d'esborrat)
+  glEnable(GL_DEPTH_TEST);
   carregaShaders();
   createBuffers();
+  initCamera();
+}
+
+void MyGLWidget::initCamera(){
+  FOV = (float)M_PI/2.0f;
+  ra = 1.0f;
+  znear = 0.4f;
+  zfar = 3.0f;
+  OBS = glm::vec3(0.0, 0.0, 1.0);
+  VRP = glm::vec3(0.0, 0.0, 0.0);
+  UP = glm::vec3(0.0, 0.1, 0.0);
+  viewTransform();
+  projectTransform();
 }
 
 void MyGLWidget::paintGL () 
 {
   // Esborrem el frame-buffer
-  glClear (GL_COLOR_BUFFER_BIT);
+  glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Carreguem la transformació de model
   modelTransform ();
 
   // Activem el VAO per a pintar la caseta 
-  glBindVertexArray (VAO_Casa);
+  glBindVertexArray (VAO_Homer);
 
   // pintem
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 5);
+  glDrawArrays(GL_TRIANGLES, 0, 3 * model.faces().size());
 
   glBindVertexArray (0);
 }
@@ -45,8 +60,20 @@ void MyGLWidget::modelTransform ()
 {
   // Matriu de transformació de model
   glm::mat4 transform (1.0f);
-  transform = glm::scale(transform, glm::vec3(scale));
+  //transform = glm::scale(transform, glm::vec3(scale));
   glUniformMatrix4fv(transLoc, 1, GL_FALSE, &transform[0][0]);
+}
+
+void MyGLWidget::projectTransform(){
+  cout << FOV << endl;
+  glm::mat4 proj = glm::perspective(FOV, ra, znear, zfar);
+  //glm::mat4 proj(1.0);
+  glUniformMatrix4fv(projLoc, 1, GL_FALSE, &proj[0][0]);
+}
+
+void MyGLWidget::viewTransform(){
+  glm::mat4 view = glm::lookAt(OBS, VRP, UP);
+  glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
 }
 
 void MyGLWidget::resizeGL (int w, int h) 
@@ -56,8 +83,8 @@ void MyGLWidget::resizeGL (int w, int h)
 
 void MyGLWidget::keyPressEvent(QKeyEvent* event) 
 {
+  makeCurrent();
   switch (event->key()) {
-    makeCurrent();
     case Qt::Key_S: { // escalar a més gran
       scale += 0.05;
       break;
@@ -72,39 +99,27 @@ void MyGLWidget::keyPressEvent(QKeyEvent* event)
 }
 
 void MyGLWidget::createBuffers () 
-{
-  // Dades de la caseta
-  // Dos VBOs, un amb posició i l'altre amb color
-  glm::vec3 posicio[5] = {
-	glm::vec3(-0.5, -1.0, -0.5),
-	glm::vec3( 0.5, -1.0, -0.5),
-	glm::vec3(-0.5,  0.0, -0.5),
-	glm::vec3( 0.5,  0.0, -0.5),
-	glm::vec3( 0.0,  0.6, -0.5)
-  }; 
-  glm::vec3 color[5] = {
-	glm::vec3(1,0,0),
-	glm::vec3(0,1,0),
-	glm::vec3(0,0,1),
-	glm::vec3(1,0,0),
-	glm::vec3(0,1,0)
-  };
+{ 
+  model.load("./models/HomerProves.obj");
+  
 
   // Creació del Vertex Array Object per pintar
-  glGenVertexArrays(1, &VAO_Casa);
-  glBindVertexArray(VAO_Casa);
+  glGenVertexArrays(1, &VAO_Homer);
+  glBindVertexArray(VAO_Homer);
 
-  glGenBuffers(1, &VBO_CasaPos);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO_CasaPos);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(posicio), posicio, GL_STATIC_DRAW);
+  glGenBuffers(1, &VBO_vertexs);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO_vertexs);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * model.faces().size() * 3 * 3,
+	       model.VBO_vertices(), GL_STATIC_DRAW);
 
   // Activem l'atribut vertexLoc
   glVertexAttribPointer(vertexLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
   glEnableVertexAttribArray(vertexLoc);
 
-  glGenBuffers(1, &VBO_CasaCol);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO_CasaCol);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(color), color, GL_STATIC_DRAW);
+  glGenBuffers(1, &VBO_color);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO_color);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * model.faces().size() * 3 * 3,
+                      model.VBO_matdiff(), GL_STATIC_DRAW);
 
   // Activem l'atribut colorLoc
   glVertexAttribPointer(colorLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
@@ -137,5 +152,7 @@ void MyGLWidget::carregaShaders()
   colorLoc = glGetAttribLocation (program->programId(), "color");
   // Uniform locations
   transLoc = glGetUniformLocation(program->programId(), "TG");
+  projLoc = glGetUniformLocation(program->programId(), "PT");
+  viewLoc = glGetUniformLocation(program->programId(), "VT");
 }
 

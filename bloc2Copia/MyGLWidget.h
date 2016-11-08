@@ -37,15 +37,15 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     void initCamera();
 
     // attribute locations
-    GLuint vertexLoc, colorLoc;
+    GLuint vertexLoc, colorLoc, terraLoc;
     // uniform locations
     GLuint transLoc, projLoc, viewLoc;
     // VAO i VBO names
-    GLuint VAO_Homer, VBO_vertexs, VBO_color;
+    GLuint VAO_Homer, VBO_vertexs, VBO_color, VAO_Terra, VBO_terraPos;
     // Program
     QOpenGLShaderProgram *program;
     // Internal vars
-    float scale;
+    float scale, rotation;
     glm::vec3 pos, OBS, VRP, UP;
     float FOV, ra, znear, zfar;
     Model model;

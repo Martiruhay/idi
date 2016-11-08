@@ -7,6 +7,7 @@ MyGLWidget::MyGLWidget (QWidget* parent) : QOpenGLWidget(parent)
 {
   setFocusPolicy(Qt::ClickFocus);  // per rebre events de teclat
   scale = 1.0f;
+  rotation = 0.0f;
 }
 
 MyGLWidget::~MyGLWidget ()
@@ -52,6 +53,9 @@ void MyGLWidget::paintGL ()
 
   // pintem
   glDrawArrays(GL_TRIANGLES, 0, 3 * model.faces().size());
+  
+  glBindVertexArray(VAO_Terra);
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
   glBindVertexArray (0);
 }
@@ -60,14 +64,14 @@ void MyGLWidget::modelTransform ()
 {
   // Matriu de transformació de model
   glm::mat4 transform (1.0f);
-  //transform = glm::scale(transform, glm::vec3(scale));
+  transform = glm::scale(transform, glm::vec3(scale));
+  transform = glm::rotate(transform, rotation ,glm::vec3(0,1,0));
   glUniformMatrix4fv(transLoc, 1, GL_FALSE, &transform[0][0]);
 }
 
 void MyGLWidget::projectTransform(){
   cout << FOV << endl;
   glm::mat4 proj = glm::perspective(FOV, ra, znear, zfar);
-  //glm::mat4 proj(1.0);
   glUniformMatrix4fv(projLoc, 1, GL_FALSE, &proj[0][0]);
 }
 
@@ -93,6 +97,10 @@ void MyGLWidget::keyPressEvent(QKeyEvent* event)
       scale -= 0.05;
       break;
     }
+    case Qt::Key_R: { // Rotar
+      rotation += (float)M_PI/4.0f;
+      break;
+    }
     default: event->ignore(); break;
   }
   update();
@@ -101,6 +109,42 @@ void MyGLWidget::keyPressEvent(QKeyEvent* event)
 void MyGLWidget::createBuffers () 
 { 
   model.load("./models/HomerProves.obj");
+  
+  glm::vec3 posicio[4] = {
+        glm::vec3(-1.0, -1.0, 1.0),
+        glm::vec3( 1.0, -1.0, 1.0),
+        glm::vec3(-1.0, -1.0, -1.0),
+        glm::vec3( 1.0, -1.0, -1.0)
+  }; 
+  
+  
+  //////////////////////////
+  
+  glGenVertexArrays(1, &VAO_Terra);
+  glBindVertexArray(VAO_Terra);
+
+  glGenBuffers(1, &VBO_terraPos);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO_terraPos);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(posicio), posicio, GL_STATIC_DRAW);
+
+  // Activem l'atribut vertexLoc
+  glVertexAttribPointer(vertexLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(terraLoc);
+
+  /*glGenBuffers(1, &VBO_CasaCol);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO_CasaCol);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(color), color, GL_STATIC_DRAW);
+
+  // Activem l'atribut colorLoc
+  glVertexAttribPointer(colorLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(colorLoc);
+
+  glBindVertexArray (0);*/
+  
+  
+  
+  ///////////////////////////
+  
   
 
   // Creació del Vertex Array Object per pintar

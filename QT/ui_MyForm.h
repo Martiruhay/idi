@@ -85,6 +85,8 @@ public:
 
         retranslateUi(MyForm);
         QObject::connect(pushButton, SIGNAL(clicked()), MyForm, SLOT(close()));
+        QObject::connect(lineEdit, SIGNAL(returnPressed()), lineEdit, SLOT(tractaReturn()));
+        QObject::connect(lineEdit, SIGNAL(enviaText(QString)), label, SLOT(setText(QString)));
 
         QMetaObject::connectSlotsByName(MyForm);
     } // setupUi

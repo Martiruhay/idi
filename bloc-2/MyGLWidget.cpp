@@ -29,15 +29,48 @@ void MyGLWidget::initializeGL ()
 }
 
 void MyGLWidget::initCamera(){
-  FOV = (float)M_PI/2.0f;
-  ra = 1.0f;
-  znear = 0.4f;
-  zfar = 3.0f;
-  OBS = glm::vec3(0.0, 0.0, 1.0);
+    radiEsfera();
+    
+  OBS = glm::vec3(0.0, 0.0, radi*1.5);
   VRP = glm::vec3(0.0, 0.0, 0.0);
   UP = glm::vec3(0.0, 0.1, 0.0);
+  
+  float d = 0;
+  for (int i = 0; i < 3; i++){
+      d += (OBS[i] - VRP[i])*(OBS[i] - VRP[i]);
+  }
+  d = sqrt(d);
+  ra = 1.0;
+  znear = (d - radi)/2.0;
+  zfar = d + radi;
+  FOV = fovi  = 2.0 * asin(radi / d); // (float)M_PI / 2.0f;
+  
   viewTransform();
   projectTransform();
+}
+
+void MyGLWidget::radiEsfera(){
+    float xmin, xmax, ymin, ymax, zmin, zmax;
+    xmin = xmax = model.vertices()[0];
+    ymin = ymax = model.vertices()[1];
+    zmin = zmax = model.vertices()[2];
+    for (unsigned int i = 3; i < model.vertices().size(); i += 3){
+        if (model.vertices()[i] < xmin) xmin = model.vertices()[i];
+        if (model.vertices()[i] > xmax) xmax = model.vertices()[i];
+        if (model.vertices()[i+1] < ymin) ymin = model.vertices()[i+1];
+        if (model.vertices()[i+1] > ymax) ymax = model.vertices()[i+1];
+        if (model.vertices()[i+2] < zmin) zmin = model.vertices()[i+2];
+        if (model.vertices()[i+2] > zmax) zmax = model.vertices()[i+2];
+    }
+    
+    float dx = xmax - xmin;
+    float dy = ymax - ymin;
+    float dz = zmax - zmin;
+    
+    radi = sqrt(dx*dx + dy*dy + dz*dz)/2.0;
+    centre[0] = (xmax + xmin)/2.0;
+    centre[1] = (ymax + ymin)/2.0;
+    centre[2] = (zmax + zmin)/2.0;
 }
 
 void MyGLWidget::paintGL () 
@@ -54,9 +87,10 @@ void MyGLWidget::paintGL ()
   // pintem
   glDrawArrays(GL_TRIANGLES, 0, 3 * model.faces().size());
   
-  terraTransform();
+  //TERRA
+  /*terraTransform();
   glBindVertexArray(VAO_Terra);
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);*/
 
   glBindVertexArray (0);
 }
@@ -66,13 +100,13 @@ void MyGLWidget::modelTransform ()
   // Matriu de transformació de model
   glm::mat4 transform (1.0f);
   transform = glm::scale(transform, glm::vec3(scale));
-  transform = glm::rotate(transform, rotation ,glm::vec3(0,1,0));
+  transform = glm::rotate(transform, rotation, glm::vec3(0,1,0));
+  transform = glm::translate(transform, -centre);
   glUniformMatrix4fv(transLoc, 1, GL_FALSE, &transform[0][0]);
 }
 
 void MyGLWidget::terraTransform(){
   glm::mat4 transform (1.0f);
-  transform = glm::scale(transform, glm::vec3(scale));
   glUniformMatrix4fv(transLoc, 1, GL_FALSE, &transform[0][0]);
 }
 
@@ -88,6 +122,15 @@ void MyGLWidget::viewTransform(){
 
 void MyGLWidget::resizeGL (int w, int h) 
 {
+    //w i h són els del nou viewport
+    
+    float newViewport = float(w)/float(h);
+    ra = newViewport;
+    
+    if (newViewport < 1) FOV = 2.0 * atan(tan(fovi/2.0)/newViewport);
+    
+    projectTransform();
+    
   glViewport(0, 0, w, h);
 }
 
@@ -114,9 +157,7 @@ void MyGLWidget::keyPressEvent(QKeyEvent* event)
 
 void MyGLWidget::createBuffers () 
 { 
-    std::string path = "./models/HomerProves.obj";
-  model.load(path);
-  
+  model.load("./models/porsche.obj");
   glm::vec3 posicio[4] = {
         glm::vec3(-1.0, -1.0, 1.0),
         glm::vec3( 1.0, -1.0, 1.0),

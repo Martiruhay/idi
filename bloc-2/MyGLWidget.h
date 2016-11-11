@@ -36,6 +36,8 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     void terraTransform();
     
     void initCamera();
+    
+    void radiEsfera();
 
     // attribute locations
     GLuint vertexLoc, colorLoc;
@@ -48,7 +50,9 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     // Internal vars
     float scale, rotation;
     glm::vec3 pos, OBS, VRP, UP;
-    float FOV, ra, znear, zfar;
+    float FOV, fovi, ra, znear, zfar;
     Model model;
+    float radi;
+    glm::vec3 centre;
 };
 

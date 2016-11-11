@@ -1,7 +1,7 @@
 #include "MyGLWidget.h"
-
+#include <string>
 #include <iostream>
-using namespace std;
+//using namespace std;
 
 MyGLWidget::MyGLWidget (QWidget* parent) : QOpenGLWidget(parent)
 {
@@ -70,7 +70,6 @@ void MyGLWidget::modelTransform ()
 }
 
 void MyGLWidget::projectTransform(){
-  cout << FOV << endl;
   glm::mat4 proj = glm::perspective(FOV, ra, znear, zfar);
   glUniformMatrix4fv(projLoc, 1, GL_FALSE, &proj[0][0]);
 }
@@ -108,7 +107,8 @@ void MyGLWidget::keyPressEvent(QKeyEvent* event)
 
 void MyGLWidget::createBuffers () 
 { 
-  model.load("./models/HomerProves.obj");
+    std::string path = "./models/HomerProves.obj";
+  model.load(path);
   
   glm::vec3 posicio[4] = {
         glm::vec3(-1.0, -1.0, 1.0),

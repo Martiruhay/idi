@@ -26,6 +26,10 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     virtual void resizeGL (int width, int height);
     // keyPressEvent - Es cridat quan es prem una tecla
     virtual void keyPressEvent (QKeyEvent *event);
+    
+    virtual void mousePressEvent   (QMouseEvent * e);
+    virtual void mouseReleaseEvent (QMouseEvent * e);
+    virtual void mouseMoveEvent    (QMouseEvent * e);
 
   private:
     void createBuffers ();
@@ -52,7 +56,10 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     glm::vec3 pos, OBS, VRP, UP;
     float FOV, fovi, ra, znear, zfar;
     Model model;
-    float radi;
+    float radi, psi, theta, phy, delta;
     glm::vec3 centre;
+    typedef enum {NOINTERACCIO, ROTACIO} Interaccio;
+    Interaccio interaccio;
+    int xClick, yClick;
 };
 

@@ -34,6 +34,11 @@ void MyGLWidget::initCamera(){
   OBS = glm::vec3(0.0, 0.0, radi*1.5);
   VRP = glm::vec3(0.0, 0.0, 0.0);
   UP = glm::vec3(0.0, 0.1, 0.0);
+  phy = psi = theta = 0.0;
+  xClick     = 0;
+    yClick     = 0;
+    delta     = M_PI / 180.0;
+    interaccio = NOINTERACCIO;
   
   float d = 0;
   for (int i = 0; i < 3; i++){
@@ -80,6 +85,8 @@ void MyGLWidget::paintGL ()
 
   // Carreguem la transformació de model
   modelTransform ();
+  viewTransform();
+  projectTransform();
 
   // Activem el VAO per a pintar la caseta 
   glBindVertexArray (VAO_Homer);
@@ -116,8 +123,16 @@ void MyGLWidget::projectTransform(){
 }
 
 void MyGLWidget::viewTransform(){
-  glm::mat4 view = glm::lookAt(OBS, VRP, UP);
-  glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+  //glm::mat4 view = glm::lookAt(OBS, VRP, UP);
+    glm::mat4 view(1.0f);
+    view = glm::translate(view, -OBS);
+    view = glm::rotate(view, psi, glm::vec3(0,1,0));
+    view = glm::rotate(view, -theta, glm::vec3(1,0,0));
+    view = glm::rotate(view, phy, glm::vec3(0,0,1));
+    view = glm::translate(view, -VRP);
+    
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+  
 }
 
 void MyGLWidget::resizeGL (int w, int h) 
@@ -155,9 +170,43 @@ void MyGLWidget::keyPressEvent(QKeyEvent* event)
   update();
 }
 
+void MyGLWidget::mousePressEvent(QMouseEvent * e){
+    makeCurrent();
+    xClick = e->x();
+    yClick = e->y();
+    if (e->button() && Qt::LeftButton) 
+        interaccio = ROTACIO;
+    else interaccio = NOINTERACCIO;
+}
+
+void MyGLWidget::mouseReleaseEvent(QMouseEvent * e){
+    makeCurrent();
+    interaccio = NOINTERACCIO;
+}
+
+void MyGLWidget::mouseMoveEvent(QMouseEvent * e){
+    makeCurrent();
+    int dx = abs(e->x() - xClick);
+    int dy = abs(e->y() - yClick);
+    
+    if (dx > dy){
+        if (e->x() > xClick)
+            psi += dx*delta;
+        else psi -= dx*delta;
+    }
+    else {
+        if (e->y() > yClick)
+            theta -= dy*delta;
+        else theta += dy*delta;
+    }
+    update();
+    xClick = e->x();
+    yClick = e->y();
+}
+
 void MyGLWidget::createBuffers () 
 { 
-  model.load("./models/porsche.obj");
+  model.load("./models/Patricio.obj");
   glm::vec3 posicio[4] = {
         glm::vec3(-1.0, -1.0, 1.0),
         glm::vec3( 1.0, -1.0, 1.0),

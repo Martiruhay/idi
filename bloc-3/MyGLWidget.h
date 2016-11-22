@@ -69,7 +69,8 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     bool perspectiva;
     
     GLuint colFocusLoc, posFocusLoc;
-    glm::vec3 colFocus, posFocus;
+    glm::vec3 colFocus;
+    glm::vec4 posFocus;
     float llumX;
 };
 

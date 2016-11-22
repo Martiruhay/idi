@@ -11,8 +11,8 @@ MyGLWidget::MyGLWidget (QWidget* parent) : QOpenGLWidget(parent)
   DoingInteractive = NONE;
   radiEsc = sqrt(3);
   llumX = 0.0;
-  colFocus = glm::vec3(0.8, 0.8, 0.8);
-  posFocus = glm::vec3(llumX,1,1);
+  colFocus = glm::vec3(0.7, 0.7, 0.7);
+  posFocus = glm::vec4(llumX,1,1,1);
 }
 
 MyGLWidget::~MyGLWidget ()
@@ -32,7 +32,6 @@ void MyGLWidget::initializeGL ()
   createBuffers();
   projectTransform ();
   viewTransform ();
-  updateLlum();
   
   glUniform3fv(colFocusLoc, 1, &colFocus[0]);
 }
@@ -70,6 +69,7 @@ void MyGLWidget::createBuffers ()
 {
   // Carreguem el model de l'OBJ - Atenció! Abans de crear els buffers!
   patr.load("/assig/idi/models/Patricio.obj");
+  //patr.load("../HaloODST/ODST/ODST.obj");
   //patr.load("../Shockwave.obj");
 
   // Calculem la capsa contenidora del model
@@ -158,7 +158,7 @@ void MyGLWidget::createBuffers ()
   // Definim el material del terra
   glm::vec3 amb(0.2,0,0.2);
   glm::vec3 diff(0,0,0.8);
-  glm::vec3 spec(0.2,0.2,0.2);
+  glm::vec3 spec(0.4,0.4,0.4);
   float shin = 100;
 
   // Fem que aquest material afecti a tots els vèrtexs per igual
@@ -303,6 +303,10 @@ void MyGLWidget::viewTransform ()
   View = glm::translate(glm::mat4(1.f), glm::vec3(0, 0, -2*radiEsc));
   View = glm::rotate(View, -angleY, glm::vec3(0, 1, 0));
 
+  posFocus = glm::vec4(llumX,1,1,1);
+  posFocus = View * posFocus;
+  
+  glUniform4fv(posFocusLoc, 1, &posFocus[0]);
   glUniformMatrix4fv (viewLoc, 1, GL_FALSE, &View[0][0]);
 }
 
@@ -343,12 +347,12 @@ void MyGLWidget::keyPressEvent(QKeyEvent* event)
     }
     case Qt::Key_K: {
       llumX += 0.1;
-      updateLlum();
+      viewTransform();
       break;
     }
     case Qt::Key_L: {
       llumX -= 0.1;
-      updateLlum();
+      viewTransform();
       break;
     }
     default: event->ignore(); break;
@@ -390,9 +394,9 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent *e)
   update ();
 }
 
-void MyGLWidget::updateLlum(){
+/*void MyGLWidget::updateLlum(){
   posFocus = glm::vec3(llumX,1,1);
   glUniform3fv(posFocusLoc, 1, &posFocus[0]);
-}
+}*/
 
 

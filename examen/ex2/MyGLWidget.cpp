@@ -6,10 +6,24 @@ MyGLWidget::MyGLWidget (QWidget* parent) : QOpenGLWidget(parent)
 {
   setFocusPolicy(Qt::ClickFocus);  // per rebre events de teclat
   xClick = yClick = 0;
-  angleY = 0.0;
+  angleY = angleX = 0.0;
   perspectiva = true;
   DoingInteractive = NONE;
-  radiEsc = sqrt(5);
+  
+  glm::vec3 v = glm::vec3(-2,-1, -2) - glm::vec3(2, 3, 2);
+  radiEsc = sqrt(v.x*v.x + v.y*v.y + v.z*v.z)/2;
+  obs = glm::vec3(0.0, 1.0, radiEsc*1.5);
+  vrp = glm::vec3(0.0, 1.0, 0.0);
+  up = glm::vec3(0.0, 0.1, 0.0);
+  float d = 0;
+  for (int i = 0; i < 3; i++){
+      d += (obs[i] - vrp[i])*(obs[i] - vrp[i]);
+  }
+  d = sqrt(d);
+  ra = 1.0;
+  znear = (d - radiEsc)/2.0;
+  zfar = d + radiEsc;
+  fov = fovi  = 2.0 * asin(radiEsc / d); // (float)M_PI / 2.0f;
 }
 
 MyGLWidget::~MyGLWidget ()
@@ -52,12 +66,25 @@ void MyGLWidget::paintGL ()
   // Pintem l'escena
   glDrawArrays(GL_TRIANGLES, 0, patr.faces().size()*3);
   
+  //Patricio 2
+  modelTransformPatricio2();
+  glDrawArrays(GL_TRIANGLES, 0, patr.faces().size()*3);
+  //Fi Patricio 2
+  
   glBindVertexArray(0);
 }
 
 void MyGLWidget::resizeGL (int w, int h) 
-{
+{  
+  float newViewport = float(w)/float(h);
+  ra = newViewport;
+    
+  if (newViewport < 1) fov = 2.0 * atan(tan(fovi/2.0)/newViewport);
+    
+  projectTransform();
+    
   glViewport(0, 0, w, h);
+
 }
 
 void MyGLWidget::createBuffers ()
@@ -77,7 +104,7 @@ void MyGLWidget::createBuffers ()
   glGenBuffers(1, &VBO_PatrPos);
   glBindBuffer(GL_ARRAY_BUFFER, VBO_PatrPos);
   glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*patr.faces().size()*3*3, patr.VBO_vertices(), GL_STATIC_DRAW);
-
+  
   // Activem l'atribut vertexLoc
   glVertexAttribPointer(vertexLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
   glEnableVertexAttribArray(vertexLoc);
@@ -270,6 +297,18 @@ void MyGLWidget::modelTransformPatricio ()
   glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
 }
 
+void MyGLWidget::modelTransformPatricio2 ()
+{
+  glm::mat4 TG(1.f);  // Matriu de transformació
+  TG = glm::translate(TG, glm::vec3(0, 2, 0)),
+  TG = glm::rotate(TG, float(M_PI), glm::vec3(0,0,1));
+  TG = glm::scale(TG, glm::vec3(escala, escala, escala));
+  TG = glm::translate(TG, -centrePatr);
+  
+  glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
+}
+
+
 void MyGLWidget::modelTransformTerra ()
 {
   glm::mat4 TG(1.f);  // Matriu de transformació
@@ -280,7 +319,7 @@ void MyGLWidget::projectTransform ()
 {
   glm::mat4 Proj;  // Matriu de projecció
   if (perspectiva)
-    Proj = glm::perspective(float(M_PI/3.0), 1.0f, radiEsc, 3.0f*radiEsc);
+    Proj = glm::perspective(fov, ra, znear, zfar);
   else
     Proj = glm::ortho(-radiEsc, radiEsc, -radiEsc, radiEsc, radiEsc, 3.0f*radiEsc);
 
@@ -290,8 +329,9 @@ void MyGLWidget::projectTransform ()
 void MyGLWidget::viewTransform ()
 {
   glm::mat4 View;  // Matriu de posició i orientació
-  View = glm::translate(glm::mat4(1.f), glm::vec3(0, 0, -2*radiEsc));
+  View = glm::translate(View, -obs);
   View = glm::rotate(View, -angleY, glm::vec3(0, 1, 0));
+  View = glm::rotate(View, angleX, glm::vec3(1, 0, 0));
 
   glUniformMatrix4fv (viewLoc, 1, GL_FALSE, &View[0][0]);
 }
@@ -361,6 +401,7 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent *e)
   {
     // Fem la rotació
     angleY += (e->x() - xClick) * M_PI / 180.0;
+    angleX += (e->y() - yClick) * M_PI / 180.0;
     viewTransform ();
   }
 

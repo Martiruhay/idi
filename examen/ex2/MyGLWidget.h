@@ -42,6 +42,7 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     void modelTransformTerra ();
     void modelTransformPatricio ();
     void calculaCapsaModel ();
+    void modelTransformPatricio2();
 
     // VAO i VBO names
     GLuint VAO_Patr, VBO_PatrPos, VBO_PatrNorm, VBO_PatrMatamb, VBO_PatrMatdiff, VBO_PatrMatspec, VBO_PatrMatshin;
@@ -64,7 +65,8 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     typedef  enum {NONE, ROTATE} InteractiveAction;
     InteractiveAction DoingInteractive;
     int xClick, yClick;
-    float angleY;
+    float angleY, angleX, ra, fov, fovi, znear, zfar;
+    glm::vec3 vrp, obs, up;
     bool perspectiva;
 };
 

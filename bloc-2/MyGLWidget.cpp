@@ -35,8 +35,8 @@ void MyGLWidget::initCamera(){
   VRP = glm::vec3(0.0, 0.0, 0.0);
   UP = glm::vec3(0.0, 0.1, 0.0);
   phy = psi = theta = 0.0;
-  xClick     = 0;
-    yClick     = 0;
+  xPrev     = 0;
+    yPrev     = 0;
     delta     = M_PI / 180.0;
     interaccio = NOINTERACCIO;
   
@@ -172,8 +172,8 @@ void MyGLWidget::keyPressEvent(QKeyEvent* event)
 
 void MyGLWidget::mousePressEvent(QMouseEvent * e){
     makeCurrent();
-    xClick = e->x();
-    yClick = e->y();
+    xPrev = e->x();
+    yPrev = e->y();
     if (e->button() && Qt::LeftButton) 
         interaccio = ROTACIO;
     else interaccio = NOINTERACCIO;
@@ -186,7 +186,7 @@ void MyGLWidget::mouseReleaseEvent(QMouseEvent * e){
 
 void MyGLWidget::mouseMoveEvent(QMouseEvent * e){
     makeCurrent();
-    int dx = abs(e->x() - xClick);
+    /*int dx = abs(e->x() - xClick);
     int dy = abs(e->y() - yClick);
     
     if (dx > dy){
@@ -198,10 +198,17 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent * e){
         if (e->y() > yClick)
             theta -= dy*delta;
         else theta += dy*delta;
-    }
+    }*/
+    
+    int dx = e->x() - xPrev;
+    int dy = e->y() - yPrev;
+    
+    psi += dx*delta;
+    theta -= dy*delta;
+    
     update();
-    xClick = e->x();
-    yClick = e->y();
+    xPrev = e->x();
+    yPrev = e->y();
 }
 
 void MyGLWidget::createBuffers () 

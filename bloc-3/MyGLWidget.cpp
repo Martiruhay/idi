@@ -68,7 +68,7 @@ void MyGLWidget::resizeGL (int w, int h)
 void MyGLWidget::createBuffers ()
 {
   // Carreguem el model de l'OBJ - Atenció! Abans de crear els buffers!
-  patr.load("/assig/idi/models/Patricio.obj");
+  patr.load("./models/Patricio.obj");
   //patr.load("../HaloODST/ODST/ODST.obj");
   //patr.load("../Shockwave.obj");
 

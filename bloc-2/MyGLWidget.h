@@ -60,6 +60,6 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     glm::vec3 centre;
     typedef enum {NOINTERACCIO, ROTACIO} Interaccio;
     Interaccio interaccio;
-    int xClick, yClick;
+    int xPrev, yPrev;
 };
 

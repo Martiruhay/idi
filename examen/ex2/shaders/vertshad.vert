@@ -55,6 +55,18 @@ vec3 Phong (vec3 NormSCO, vec3 L, vec4 vertSCO)
 }
 
 void main(){
-    fcolor = matdiff;
+
     gl_Position = proj * view * TG * vec4 (vertex, 1.0);
+    
+    ////
+    
+    vec4 vertex_sco = view*TG * vec4(vertex,1);
+    mat3 NormalMatrix = inverse(transpose(mat3(view*TG)));
+    vec3 normal_sco = NormalMatrix * normal;
+    normal_sco = normalize(normal_sco);
+    
+    vec3 L = posFocus - vertex_sco.xyz;
+    L = normalize(L);
+    
+    fcolor = Phong(normal_sco, L, vertex_sco);
 }

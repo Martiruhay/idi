@@ -1,12 +1,11 @@
 TEMPLATE    = app
-QT         += opengl
+QT         += opengl 
 
-INCLUDEPATH +=  /usr/include/glm
-INCLUDEPATH += ../Model
+INCLUDEPATH +=  /usr/include/glm Model
 
 FORMS += MyForm.ui
 
-HEADERS += MyForm.h MyGLWidget.h
+HEADERS += MyForm.h MyGLWidget.h Model/Model.h
 
-SOURCES += main.cpp  MyForm.cpp \
-        MyGLWidget.cpp ../Model/model.cpp
+SOURCES += main.cpp MyForm.cpp \
+        MyGLWidget.cpp Model/model.cpp

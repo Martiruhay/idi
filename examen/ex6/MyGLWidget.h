@@ -61,10 +61,9 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     Model vaca;
     // paràmetres calculats a partir de la capsa contenidora del model
     glm::vec3 centrePatr, centreVaca;
-    float escala, escalaVaca;
+    float escala, escalaVaca, rotation;
     // radi de l'escena
     float radiEsc;
-
     typedef  enum {NONE, ROTATE, ZOOM} InteractiveAction;
     InteractiveAction DoingInteractive;
     int xClick, yClick;

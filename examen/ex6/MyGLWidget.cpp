@@ -5,7 +5,7 @@
 MyGLWidget::MyGLWidget (QWidget* parent) : QOpenGLWidget(parent)
 {
   setFocusPolicy(Qt::ClickFocus);  // per rebre events de teclat
-  xClick = yClick = 0;
+  xClick = yClick = rotation = 0;
   angleY = angleX = 0.0;
   perspectiva = true;
   DoingInteractive = NONE;
@@ -359,6 +359,7 @@ void MyGLWidget::carregaShaders()
 void MyGLWidget::modelTransformPatricio ()
 {
   glm::mat4 TG(1.f);  // Matriu de transformació
+  TG = glm::rotate(TG, rotation, glm::vec3(0,1,0));
   TG = glm::translate(TG, glm::vec3(0,0.25/2,0));
   TG = glm::translate(TG, glm::vec3(1,-0.5,0));
   TG = glm::scale(TG, glm::vec3(escala, escala, escala));
@@ -381,6 +382,7 @@ void MyGLWidget::modelTransformPatricio2 ()
 
 void MyGLWidget::modelTransformVaca (){
   glm::mat4 TG(1.f);  // Matriu de transformació
+  TG = glm::rotate(TG, rotation, glm::vec3(0,1,0));
   TG = glm::translate(TG, glm::vec3(0,0.25,0));
   TG = glm::translate(TG, glm::vec3(1,-1,0));
   TG = glm::scale(TG, glm::vec3(escalaVaca, escalaVaca, escalaVaca));
@@ -474,6 +476,11 @@ void MyGLWidget::keyPressEvent(QKeyEvent* event)
   switch (event->key()) {
     case Qt::Key_O: { // canvia òptica entre perspectiva i axonomètrica
       perspectiva = !perspectiva;
+      projectTransform ();
+      break;
+    }
+    case Qt::Key_R: {
+      rotation += float(M_PI/6);
       projectTransform ();
       break;
     }

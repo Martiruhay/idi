@@ -17,6 +17,9 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
   public:
     MyGLWidget (QWidget *parent=0);
     ~MyGLWidget ();
+    
+  public slots:
+    void zoom(int zoom);
 
   protected:
     // initializeGL - Aqui incluim les inicialitzacions del contexte grafic.

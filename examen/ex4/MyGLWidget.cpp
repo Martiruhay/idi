@@ -423,4 +423,12 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent *e)
   update ();
 }
 
+void MyGLWidget::zoom(int zoom){
+  std::cout << "ZOOM!" << zoom << "fov = "<< float(2*M_PI*zoom/100) << std::endl;
+  fov = float(M_PI*zoom/200);
+  viewTransform();
+  projectTransform();
+  update();
+}
+
 

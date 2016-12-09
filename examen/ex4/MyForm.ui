@@ -27,6 +27,23 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
+      <widget class="MySlider" name="verticalSlider">
+       <property name="maximum">
+        <number>100</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -62,6 +79,18 @@
    <extends>QWidget</extends>
    <header>MyGLWidget.h</header>
    <container>1</container>
+   <slots>
+    <slot>zoom(int)</slot>
+   </slots>
+  </customwidget>
+  <customwidget>
+   <class>MySlider</class>
+   <extends>QSlider</extends>
+   <header location="global">MySlider.h</header>
+   <slots>
+    <signal>enviaValor(int)</signal>
+    <slot>tractaCanvi()</slot>
+   </slots>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -73,12 +102,60 @@
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>796</x>
-     <y>596</y>
+     <x>810</x>
+     <y>717</y>
     </hint>
     <hint type="destinationlabel">
      <x>839</x>
      <y>529</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>verticalSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>739</x>
+     <y>173</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>793</x>
+     <y>349</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>verticalSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>verticalSlider</receiver>
+   <slot>tractaCanvi()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>740</x>
+     <y>298</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>734</x>
+     <y>227</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>verticalSlider</sender>
+   <signal>enviaValor(int)</signal>
+   <receiver>widget</receiver>
+   <slot>zoom(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>735</x>
+     <y>77</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>505</x>
+     <y>593</y>
     </hint>
    </hints>
   </connection>

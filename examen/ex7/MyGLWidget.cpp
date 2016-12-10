@@ -12,7 +12,7 @@ MyGLWidget::MyGLWidget (QWidget* parent) : QOpenGLWidget(parent)
   
   glm::vec3 v = glm::vec3(-2,-1, -2) - glm::vec3(2, 3, 2);
   radiEsc = sqrt(v.x*v.x + v.y*v.y + v.z*v.z)/2;
-  obs = glm::vec3(0.0, 1.0, radiEsc*1.5);
+  obs = glm::vec3(-1, 1, -1);
   vrp = glm::vec3(0.0, 1.0, 0.0);
   up = glm::vec3(0.0, 0.1, 0.0);
   float d = 0;
@@ -23,7 +23,7 @@ MyGLWidget::MyGLWidget (QWidget* parent) : QOpenGLWidget(parent)
   ra = 1.0;
   znear = (d - radiEsc)/2.0;
   zfar = d + radiEsc;
-  fov = fovi  = 2.0 * asin(radiEsc / d); // (float)M_PI / 2.0f;
+  fov = fovi  = float(M_PI/3); // (float)M_PI / 2.0f;
 }
 
 MyGLWidget::~MyGLWidget ()

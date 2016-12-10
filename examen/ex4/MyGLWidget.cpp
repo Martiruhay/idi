@@ -317,6 +317,7 @@ void MyGLWidget::modelTransformTerra ()
 
 void MyGLWidget::projectTransform ()
 {
+  std::cout << "fov en projrans = " << fov << std::endl;
   glm::mat4 Proj;  // Matriu de projecció
   if (perspectiva)
     Proj = glm::perspective(fov, ra, znear, zfar);
@@ -424,9 +425,9 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent *e)
 }
 
 void MyGLWidget::zoom(int zoom){
-  std::cout << "ZOOM!" << zoom << "fov = "<< float(2*M_PI*zoom/100) << std::endl;
-  fov = float(M_PI*zoom/200);
-  viewTransform();
+  makeCurrent();
+  fov = fovi = float(M_PI*zoom/100);
+  //std::cout << "fov en zoom = " << fov << std::endl;
   projectTransform();
   update();
 }

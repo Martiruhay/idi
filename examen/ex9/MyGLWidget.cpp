@@ -9,6 +9,7 @@ MyGLWidget::MyGLWidget (QWidget* parent) : QOpenGLWidget(parent)
   angleY = angleX = 0.0;
   perspectiva = true;
   DoingInteractive = NONE;
+  ratlles = false;
   
   glm::vec3 v = glm::vec3(-2,-1, -2) - glm::vec3(2, 3, 2);
   radiEsc = sqrt(v.x*v.x + v.y*v.y + v.z*v.z)/2;
@@ -354,6 +355,7 @@ void MyGLWidget::carregaShaders()
   
   //vacaLoc 
   vacaLoc = glGetUniformLocation (program->programId(), "vaca");
+  ratllesLoc = glGetUniformLocation (program->programId(), "ratlles");
 
   // Demanem identificadors per als uniforms del vertex shader
   transLoc = glGetUniformLocation (program->programId(), "TG");
@@ -488,6 +490,12 @@ void MyGLWidget::keyPressEvent(QKeyEvent* event)
     case Qt::Key_R: {
       rotation += float(M_PI/6);
       projectTransform ();
+      break;
+    }
+    case Qt::Key_X: {
+      ratlles = not ratlles;
+      if (ratlles) glUniform1i(ratllesLoc, 1);
+      else glUniform1i(ratllesLoc, 0);
       break;
     }
     default: event->ignore(); break;

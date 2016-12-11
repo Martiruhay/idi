@@ -55,7 +55,7 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     GLuint transLoc, projLoc, viewLoc;
     // attribute locations
     GLuint vertexLoc, normalLoc, matambLoc, matdiffLoc, matspecLoc, matshinLoc;
-    GLuint vacaLoc;
+    GLuint vacaLoc, ratllesLoc;
 
     // model
     Model patr;
@@ -70,6 +70,6 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     int xClick, yClick;
     float angleY, angleX, ra, fov, fovi, znear, zfar;
     glm::vec3 vrp, obs, up;
-    bool perspectiva;
+    bool perspectiva, ratlles;
 };
 

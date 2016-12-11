@@ -317,7 +317,7 @@ void MyGLWidget::modelTransformTerra ()
 
 void MyGLWidget::projectTransform ()
 {
-  std::cout << "fov en projrans = " << fov << std::endl;
+  //std::cout << "fov en projrans = " << fov << std::endl;
   glm::mat4 Proj;  // Matriu de projecció
   if (perspectiva)
     Proj = glm::perspective(fov, ra, znear, zfar);
@@ -414,8 +414,12 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent *e)
   {
     // Fem la rotació
     fov += (e->y() - yClick) * M_PI / 180.0;
-    viewTransform ();
-    projectTransform();
+    if (fov > M_PI || fov < 0) fov -= (e->y() - yClick) * M_PI / 180.0;
+    else {
+        emit enviaValor(int(fov*100/M_PI));
+        viewTransform ();
+        projectTransform();
+    }
   }
 
   xClick = e->x();

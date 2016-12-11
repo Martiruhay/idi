@@ -58,6 +58,7 @@ public:
         verticalSlider = new MySlider(MyForm);
         verticalSlider->setObjectName(QStringLiteral("verticalSlider"));
         verticalSlider->setMaximum(100);
+        verticalSlider->setValue(50);
         verticalSlider->setOrientation(Qt::Vertical);
 
         verticalLayout->addWidget(verticalSlider);
@@ -90,6 +91,7 @@ public:
         QObject::connect(verticalSlider, SIGNAL(valueChanged(int)), label, SLOT(setNum(int)));
         QObject::connect(verticalSlider, SIGNAL(valueChanged(int)), verticalSlider, SLOT(tractaCanvi()));
         QObject::connect(verticalSlider, SIGNAL(enviaValor(int)), widget, SLOT(zoom(int)));
+        QObject::connect(widget, SIGNAL(enviaValor(int)), verticalSlider, SLOT(setValue(int)));
 
         QMetaObject::connectSlotsByName(MyForm);
     } // setupUi

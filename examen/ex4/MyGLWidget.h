@@ -20,6 +20,8 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     
   public slots:
     void zoom(int zoom);
+  signals:
+  void enviaValor(const int &);
 
   protected:
     // initializeGL - Aqui incluim les inicialitzacions del contexte grafic.

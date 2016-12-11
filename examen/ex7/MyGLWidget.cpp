@@ -12,18 +12,21 @@ MyGLWidget::MyGLWidget (QWidget* parent) : QOpenGLWidget(parent)
   
   glm::vec3 v = glm::vec3(-2,-1, -2) - glm::vec3(2, 3, 2);
   radiEsc = sqrt(v.x*v.x + v.y*v.y + v.z*v.z)/2;
-  obs = glm::vec3(-1, 1, -1);
-  vrp = glm::vec3(0.0, 1.0, 0.0);
+  std::cout << radiEsc << std::endl;
+  //obs = glm::vec3(0.0, 1.0, radiEsc*1.5);
+  obs = glm::vec3(-1.0, 1.0, -1.0);
+  vrp = glm::vec3(1.0, -0.5, 0.0);
   up = glm::vec3(0.0, 0.1, 0.0);
   float d = 0;
   for (int i = 0; i < 3; i++){
-      d += (obs[i] - vrp[i])*(obs[i] - vrp[i]);
+      d += (obs[i] - vrp[i])*(obs[i] - vrp[i]); 
   }
   d = sqrt(d);
   ra = 1.0;
-  znear = (d - radiEsc)/2.0;
-  zfar = d + radiEsc;
-  fov = fovi  = float(M_PI/3); // (float)M_PI / 2.0f;
+  znear = 1;//(d - radiEsc)/2.0;
+  zfar = 10;//d + radiEsc;
+  //fov = fovi  = 2.0 * asin(radiEsc / d); // (float)M_PI / 2.0f;
+  fov = fovi = M_PI / 3.0;
 }
 
 MyGLWidget::~MyGLWidget ()
@@ -35,7 +38,7 @@ MyGLWidget::~MyGLWidget ()
 void MyGLWidget::initializeGL ()
 {
   // Cal inicialitzar l'ús de les funcions d'OpenGL
-  initializeOpenGLFunctions();  
+  initializeOpenGLFunctions();
 
   glClearColor(0.5, 0.7, 1.0, 1.0); // defineix color de fons (d'esborrat)
   glEnable(GL_DEPTH_TEST);
@@ -359,9 +362,9 @@ void MyGLWidget::carregaShaders()
 void MyGLWidget::modelTransformPatricio ()
 {
   glm::mat4 TG(1.f);  // Matriu de transformació
-  TG = glm::rotate(TG, rotation, glm::vec3(0,1,0));
   TG = glm::translate(TG, glm::vec3(0,0.25/2,0));
   TG = glm::translate(TG, glm::vec3(1,-0.5,0));
+  TG = glm::rotate(TG, rotation, glm::vec3(0,1,0));
   TG = glm::scale(TG, glm::vec3(escala, escala, escala));
   TG = glm::translate(TG, -centrePatr);
   
@@ -382,9 +385,9 @@ void MyGLWidget::modelTransformPatricio2 ()
 
 void MyGLWidget::modelTransformVaca (){
   glm::mat4 TG(1.f);  // Matriu de transformació
-  TG = glm::rotate(TG, rotation, glm::vec3(0,1,0));
   TG = glm::translate(TG, glm::vec3(0,0.25,0));
   TG = glm::translate(TG, glm::vec3(1,-1,0));
+  TG = glm::rotate(TG, rotation, glm::vec3(0,1,0));
   TG = glm::scale(TG, glm::vec3(escalaVaca, escalaVaca, escalaVaca));
   TG = glm::rotate(TG, float(M_PI/-2), glm::vec3(1,0,0));
   TG = glm::translate(TG, -centreVaca);
@@ -413,9 +416,11 @@ void MyGLWidget::projectTransform ()
 void MyGLWidget::viewTransform ()
 {
   glm::mat4 View;  // Matriu de posició i orientació
-  View = glm::translate(View, -obs);
+  /*View = glm::translate(View, -obs);
   View = glm::rotate(View, -angleY, glm::vec3(0, 1, 0));
   View = glm::rotate(View, angleX, glm::vec3(1, 0, 0));
+  */
+  View = glm::lookAt(obs, vrp, up);
 
   glUniformMatrix4fv (viewLoc, 1, GL_FALSE, &View[0][0]);
 }

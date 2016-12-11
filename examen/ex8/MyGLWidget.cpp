@@ -50,6 +50,8 @@ void MyGLWidget::paintGL ()
   // Esborrem el frame-buffer i el depth-buffer
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  glUniform1i(vacaLoc, 0);
+  
   // Activem el VAO per a pintar el terra 
   glBindVertexArray (VAO_Terra);
 
@@ -349,6 +351,9 @@ void MyGLWidget::carregaShaders()
   matspecLoc = glGetAttribLocation (program->programId(), "matspec");
   // Obtenim identificador per a l'atribut “matshin” del vertex shader
   matshinLoc = glGetAttribLocation (program->programId(), "matshin");
+  
+  //vacaLoc 
+  vacaLoc = glGetUniformLocation (program->programId(), "vaca");
 
   // Demanem identificadors per als uniforms del vertex shader
   transLoc = glGetUniformLocation (program->programId(), "TG");
@@ -390,6 +395,7 @@ void MyGLWidget::modelTransformVaca (){
   TG = glm::translate(TG, -centreVaca);
   
   glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
+  glUniform1i(vacaLoc, 1);
 }
 
 

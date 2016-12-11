@@ -7,6 +7,8 @@ in vec3 matamb;
 in vec3 matdiff;
 in vec3 matspec;
 in float matshin;
+//per a saber si pintem la vaca
+uniform int vaca;
 
 uniform mat4 proj;
 uniform mat4 view;
@@ -17,6 +19,14 @@ vec3 colFocus = vec3(0.8, 0.8, 0.8);
 vec3 llumAmbient = vec3(0.2, 0.2, 0.2);
 vec3 posFocus = vec3(1, 1, 1);  // en SCA
 
+vec3 vacaamb = vec3(0.2,0.2,0.2);
+vec3 vacadiff = vec3(0.3,0.3,0.3);
+vec3 vacaspec = vec3(1,1,1);
+float vacashin = 100;
+
+vec3 amb, diff, spec;
+float shin;
+
 out vec3 fcolor;
 
 vec3 Lambert (vec3 NormSCO, vec3 L) 
@@ -24,11 +34,11 @@ vec3 Lambert (vec3 NormSCO, vec3 L)
     // S'assumeix que els vectors que es reben com a paràmetres estan normalitzats
 
     // Inicialitzem color a component ambient
-    vec3 colRes = llumAmbient * matamb;
+    vec3 colRes = llumAmbient * amb;
 
     // Afegim component difusa, si n'hi ha
     if (dot (L, NormSCO) > 0)
-      colRes = colRes + colFocus * matdiff * dot (L, NormSCO);
+      colRes = colRes + colFocus * diff * dot (L, NormSCO);
     return (colRes);
 }
 
@@ -46,18 +56,31 @@ vec3 Phong (vec3 NormSCO, vec3 L, vec4 vertSCO)
     vec3 R = reflect(-L, NormSCO); // equival a: normalize (2.0*dot(NormSCO,L)*NormSCO - L);
     vec3 V = normalize(-vertSCO.xyz);
 
-    if ((dot(R, V) < 0) || (matshin == 0))
+    if ((dot(R, V) < 0) || (shin == 0))
       return colRes;  // no hi ha component especular
     
     // Afegim la component especular
-    float shine = pow(max(0.0, dot(R, V)), matshin);
-    return (colRes + matspec * colFocus * shine); 
+    float shine = pow(max(0.0, dot(R, V)), shin);
+    return (colRes + spec * colFocus * shine); 
 }
 
 void main(){
 
     gl_Position = proj * view * TG * vec4 (vertex, 1.0);
     
+    ////
+    if (vaca != 0){
+        amb = vacaamb;
+        diff = vacadiff;
+        spec = vacaspec;
+        shin = vacashin;
+    }
+    else {
+        amb = matamb;
+        diff = matdiff;
+        spec = matspec;
+        shin = matshin;
+    }
     ////
     
     vec4 vertex_sco = view*TG * vec4(vertex,1);

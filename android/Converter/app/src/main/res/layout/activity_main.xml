@@ -12,5 +12,54 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:text="Amount"
+        android:id="@+id/txtAmount"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="5"
+        android:id="@+id/txtValor"
+        android:layout_alignBottom="@+id/btnConvert"
+        android:layout_toEndOf="@+id/txtAmount" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Convert"
+        android:id="@+id/btnConvert"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:clickable="true"
+        android:onClick="convert" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Result"
+        android:id="@+id/txtResult"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="31dp" />
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_toEndOf="@+id/txtValor">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Km"
+            android:id="@+id/rdKm"
+            android:checked="true" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Miles"
+            android:id="@+id/rdMiles"
+            android:checked="false" />
+    </RadioGroup>
 </RelativeLayout>
